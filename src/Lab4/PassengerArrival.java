@@ -6,13 +6,12 @@ package Lab4;
 public class PassengerArrival {
     int numPassengers;
     int destinationFloor;
-    int timePeriod;
+    int timePeriod; //rate of occurance
     int expectedTimeOfArrival;
 
-    public PassengerArrival(int numPassengers, int destinationFloor, int timePeriod, int expectedTimeOfArrival) {
+    public PassengerArrival(int numPassengers, int destinationFloor, int timePeriod) {
         this.numPassengers = numPassengers;
         this.destinationFloor = destinationFloor;
         this.timePeriod = timePeriod;
-        this.expectedTimeOfArrival = expectedTimeOfArrival;
     }
 }

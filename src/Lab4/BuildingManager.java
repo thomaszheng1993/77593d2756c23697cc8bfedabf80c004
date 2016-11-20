@@ -1,8 +1,5 @@
 package Lab4;
 
-/**
- * Created by shwil on 11/15/2016.
- */
 public class BuildingManager {
     public BuildingFloor[] floors;
 
@@ -12,4 +9,5 @@ public class BuildingManager {
             floors[i] = new BuildingFloor();
         }
     }
+
 }

@@ -2,7 +2,7 @@ package Lab4;
 
 import java.util.ArrayList;
 
-public class Elevator {
+public class Elevator implements Runnable {
     int elevatorID;
     int currentFloor;
     int numPassengers;
@@ -22,7 +22,7 @@ public class Elevator {
     }
 
     public void run() {
-        while (!moveQueue.isEmpty()) {
+        while (!Thread.currentThread().isInterrupted()) {
 
         }
     }
