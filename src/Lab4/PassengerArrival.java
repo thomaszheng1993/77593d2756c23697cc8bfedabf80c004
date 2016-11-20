@@ -9,9 +9,10 @@ public class PassengerArrival {
     int timePeriod; //rate of occurance
     int expectedTimeOfArrival;
 
-    public PassengerArrival(int numPassengers, int destinationFloor, int timePeriod) {
+    public PassengerArrival(int numPassengers, int destinationFloor, int timePeriod, int expectedTimeOfArrival) {
         this.numPassengers = numPassengers;
         this.destinationFloor = destinationFloor;
         this.timePeriod = timePeriod;
+        this.expectedTimeOfArrival = expectedTimeOfArrival;
     }
 }

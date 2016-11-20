@@ -1,6 +1,7 @@
 package Lab4;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 
 public class Elevator implements Runnable {
     int elevatorID;
@@ -8,7 +9,7 @@ public class Elevator implements Runnable {
     int numPassengers;
     int totalLoadedPassengers;
     int totalUnloadedPassengers;
-    ArrayList<ElevatorEvent> moveQueue;
+    ArrayDeque<ElevatorEvent> moveQueue;
     int[] passengerDestinations;
     BuildingManager manager;
 
@@ -17,6 +18,7 @@ public class Elevator implements Runnable {
         this.numPassengers = 0;
         this.totalLoadedPassengers = 0;
         this.totalUnloadedPassengers = 0;
+        this.moveQueue = new ArrayDeque<ElevatorEvent>();
         int[] passengerDestinations = new int[5];
         this.manager = manager;
     }
@@ -25,5 +27,9 @@ public class Elevator implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
 
         }
+    }
+
+    public void queueMove(ElevatorEvent move) {
+        this.moveQueue.add(move);
     }
 }

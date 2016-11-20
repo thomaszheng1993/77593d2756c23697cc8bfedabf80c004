@@ -24,6 +24,7 @@ public class ElevatorSimulation {
     };
 
     public void start() {
+        //this happens if start() is called before readConfig()
         if (passengerArrivals.isEmpty()) {
             return; //throw an exception here
         }
@@ -36,11 +37,21 @@ public class ElevatorSimulation {
         }
         for (int i = 0; i < 5; i++) {
             threads[i] = new Thread(elevators[i]);
+        }
+        for (int i = 0; i < 5; i++) {
             threads[i].start();
         }
 
         while (this.clock.getTime() <=  this.simulationLength) {
             this.clock.tick();
+            for (HashMap.Entry<Integer, ArrayList<PassengerArrival>>  entry : passengerArrivals.entrySet()) {
+                int floor = entry.getKey();
+                ArrayList<PassengerArrival> arrivals = entry.getValue();
+
+                for (PassengerArrival arrival: arrivals) {
+                    elevators[floor].queueMove(new ElevatorEvent(arrival.destinationFloor, arrival.expectedTimeOfArrival));
+                }
+            }
         }
 
     }
@@ -82,12 +93,12 @@ public class ElevatorSimulation {
                 String[] arrivalRates = configArray[1].split(";");
                 for (int k = 0; k < arrivalRates.length; k++) {
                     String[] arrivalRate = arrivalRates[k].split(" ");
-                    passengerArrivals.add(new PassengerArrival(Integer.parseInt(arrivalRate[0]), Integer.parseInt(arrivalRate[1]), Integer.parseInt(arrivalRate[2])));
+                    passengerArrivals.add(new PassengerArrival(Integer.parseInt(arrivalRate[0]), Integer.parseInt(arrivalRate[1]), Integer.parseInt(arrivalRate[2]), Integer.parseInt(arrivalRate[2])));
                 }
             }
             else {
                 String[] arrivalRate = configArray[i].split(" ");
-                passengerArrivals.add(new PassengerArrival(Integer.parseInt(arrivalRate[0]), Integer.parseInt(arrivalRate[1]), Integer.parseInt(arrivalRate[2])));
+                passengerArrivals.add(new PassengerArrival(Integer.parseInt(arrivalRate[0]), Integer.parseInt(arrivalRate[1]), Integer.parseInt(arrivalRate[2]), Integer.parseInt(arrivalRate[2])));
             }
             this.passengerArrivals.put(floor, passengerArrivals);
         }
