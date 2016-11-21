@@ -4,17 +4,19 @@ import java.io.*;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ElevatorSimulation {
     int simulationLength;
     int simulatedSecondsRate;
-    HashMap<Integer, ArrayList<PassengerArrival>> passengerArrivals;
+    HashMap<Integer, Queue<PassengerArrival>> passengerArrivals;
     Elevator[] elevators;
     BuildingManager buildingManager;
     SimClock clock;
 
     public ElevatorSimulation() {
-        this.passengerArrivals = new HashMap<Integer, ArrayList<PassengerArrival>>();
+        this.passengerArrivals = new HashMap<Integer, Queue<PassengerArrival>>();
         this.buildingManager = new BuildingManager();
         this.clock = new SimClock();
 
@@ -42,17 +44,29 @@ public class ElevatorSimulation {
             threads[i].start();
         }
 
-        while (this.clock.getTime() <=  this.simulationLength) {
-            this.clock.tick();
-            for (HashMap.Entry<Integer, ArrayList<PassengerArrival>>  entry : passengerArrivals.entrySet()) {
+        while (this.clock.getTime() <= this.simulationLength) {
+            for (HashMap.Entry<Integer, Queue<PassengerArrival>>  entry : passengerArrivals.entrySet()) {
                 int floor = entry.getKey();
-                ArrayList<PassengerArrival> arrivals = entry.getValue();
+                Queue<PassengerArrival> arrivals = entry.getValue();
 
                 for (PassengerArrival arrival: arrivals) {
-                    elevators[floor].queueMove(new ElevatorEvent(arrival.destinationFloor, arrival.expectedTimeOfArrival));
+                    if (arrival.expectedTimeOfArrival == this.clock.getTime()){
+                        passengerArrivals.remove(arrival);
+                        System.out.format("| TIME %4d | ELEVATOR #N/A | %d PASSENGER IS REQUESTING FROM FLOOR #%d TO FLOOR #%d\n\n", this.clock.getTime(), arrival.numPassengers, floor, arrival.destinationFloor);
+                        arrivals.add(new PassengerArrival(arrival.numPassengers, arrival.destinationFloor, arrival.timePeriod, this.clock.getTime() + arrival.timePeriod));
+                    }
+                    buildingManager.setPassengerRequests(floor, arrival.destinationFloor, arrival.numPassengers);
+                    //elevators[floor].queueMove(new ElevatorEvent(arrival.destinationFloor, arrival.expectedTimeOfArrival));
                 }
             }
+            this.clock.tick();
         }
+
+        //interrupts all the elevator threads
+        for (int i = 0; i < 5; i++) {
+            threads[i].interrupt();
+        }
+        return;
 
     }
 
@@ -65,7 +79,6 @@ public class ElevatorSimulation {
         String configArray[] = new String[7];
 
         try {
-            String line;
             Scanner inFile = new Scanner(new File(fileName));
 
             int i = 0;
@@ -78,19 +91,15 @@ public class ElevatorSimulation {
             System.out.println("Unable to open file '" + fileName + "'");
             return;
         }
-        catch(IOException ex) {
-            System.out.println("Error reading file '" + fileName + "'");
-            return;
-        }
 
         this.simulationLength = Integer.parseInt(configArray[0]);
         this.simulatedSecondsRate = Integer.parseInt(configArray[1]);
 
         for (int i = 2, floor = 0; i < 7; i++, floor++) {
-            ArrayList<PassengerArrival> passengerArrivals = new ArrayList<PassengerArrival>();
+            Queue<PassengerArrival> passengerArrivals = new ConcurrentLinkedQueue<PassengerArrival>();
             // If ";" is in the line then there are multiple passenger arrival rates for that floor
             if (configArray[i].contains(";")) {
-                String[] arrivalRates = configArray[1].split(";");
+                String[] arrivalRates = configArray[i].split(";");
                 for (int k = 0; k < arrivalRates.length; k++) {
                     String[] arrivalRate = arrivalRates[k].split(" ");
                     passengerArrivals.add(new PassengerArrival(Integer.parseInt(arrivalRate[0]), Integer.parseInt(arrivalRate[1]), Integer.parseInt(arrivalRate[2]), Integer.parseInt(arrivalRate[2])));

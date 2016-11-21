@@ -25,7 +25,9 @@ public class Elevator implements Runnable {
 
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
+            if (moveQueue.peek() != null) {
 
+            }
         }
     }
 

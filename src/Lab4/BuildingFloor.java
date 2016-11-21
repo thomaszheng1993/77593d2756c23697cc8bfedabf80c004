@@ -1,8 +1,5 @@
 package Lab4;
 
-/**
- * Created by shwil on 11/15/2016.
- */
 public class BuildingFloor {
     private int[] totalDestinationRequests;
     private int[] arrivedPassengers;
